@@ -1,109 +1,95 @@
-# tor-privoxy [![GitHub Workflow Status (branch)](https://img.shields.io/github/actions/workflow/status/dockage/tor-privoxy/ci.yaml?branch=main)](https://github.com/dockage/tor-privoxy/actions/workflows/ci.yaml) [![Docker Pulls](https://badgen.net/docker/pulls/dockage/tor-privoxy?icon=docker&label=pulls)](https://hub.docker.com/r/dockage/tor-privoxy/) [![Docker Stars](https://badgen.net/docker/stars/dockage/tor-privoxy?icon=docker&label=stars)](https://hub.docker.com/r/dockage/tor-privoxy/)
+# Tor & Privoxy Docker Container
 
-This image combines Tor and Privoxy services to prepare proxy connection for http and shell.
+This repository provides a Docker setup to run Tor and Privoxy in containers, enabling anonymous and secure browsing on the internet. Tor is a network of virtual tunnels that enhances privacy and security online. Privoxy is a filtering proxy that improves privacy, modifies web data, and removes ads and other unwanted content.
 
-## Contributing
+## Configuration
 
-If you find this image useful here's how you can help:
+### Environment Variables
 
-- Send a pull request with your awesome features and bug fixes
-- Help users resolve their [issues](../../issues?q=is%3Aopen+is%3Aissue).
+You can dynamically adjust the Tor and Privoxy configuration by using environment variables. Each environment variable corresponds to a specific configuration option in the Tor or Privoxy configuration files. The format is as follows:
 
-## Issues
+- **Tor Configuration**: Environment variables should be prefixed with `TOR_` followed by the option name. For example:
+  - To set the `ControlPort` option, use `TOR_ControlPort=9051`.
+  - To set the `SOCKSPort` option, use `TOR_SOCKSPort=0.0.0.0:9050`.
 
-Before reporting your issue please try updating Docker to the latest version and check if it resolves the issue. Refer to the Docker [installation guide](https://docs.docker.com/installation) for instructions.
+- **Privoxy Configuration**: Similarly, environment variables for Privoxy should be prefixed with `PRIVOXY_`. For example:
+  - To set the `listen-address` option, use `PRIVOXY_listen_address=0.0.0.0:8118`.
+  - To set the `toggle` option, use `PRIVOXY_toggle=1`.
 
-SELinux users should try disabling SELinux using the command `setenforce 0` to see if it resolves the issue.
+### Example Usage
 
-If the above recommendations do not help then [report your issue](../../issues/new) along with the following information:
+1. Clone this repository:
 
-- Output of the `docker vers6` and `docker info` commands
-- The `docker run` command or `docker-compose.yml` used to start the image. Mask out the sensitive bits.
-- Please state if you are using [Boot2Docker](http://www.boot2docker.io), [VirtualBox](https://www.virtualbox.org), etc.
+   ```bash
+   git clone https://github.com/jansouza/tor-privoxy.git
+   cd tor-privoxy
+   ```
 
-# Getting started
+2. Build the Docker image:
 
-## Installation
+   ```bash
+   docker build -t tor-privoxy .
+   ```
 
-Automated builds of the image are available on [Dockerhub](https://hub.docker.com/r/dockage/tor-privoxy) and is the recommended method of installation.
+3. Run the container:
 
-```bash
-docker pull dockage/tor-privoxy
+   ```bash
+   docker run -d \
+    --name tor-privoxy \
+    -p 9050:9050 \
+    -p 9051:9051 \
+    -p 8118:8118 \
+    -e TOR_SOCKSPort=0.0.0.0:9050 \
+    -e TOR_ControlPort=9051 \
+    -e PRIVOXY_listen-address=0.0.0.0:8118 \
+     tor-privoxy
+   ```
+
+   This will start Tor on port `9050` and Privoxy on port `8118`.
+
+### Using Docker Compose
+
+You can use Docker Compose to manage the container more easily. Here’s an example `docker-compose.yml` file:
+
+```yaml
+version: '3'
+services:
+  tor-privoxy:
+    build: .
+    ports:
+      - "9050:9050"
+      - "9051:9051"
+      - "8118:8118"
+    environment:
+      - TOR_SOCKSPort=0.0.0.0:9050
+      - TOR_ControlPort=9051
+      - PRIVOXY_listen-address=0.0.0.0:8118
 ```
 
-Alternatively you can build the image yourself.
+To start the service using Docker Compose, run:
 
 ```bash
-docker build -t dockage/tor-privoxy https://github.com/dockage/tor-privoxy.git#main
+docker-compose up -d
 ```
 
+## Check
 
-# Quick Start
+```
+# SOCKS5 Proxy
+curl -x socks5h://localhost:9050 -s https://check.torproject.org/api/ip
 
-The quickest way to get started is using [docker-compose](https://docs.docker.com/compose/).
-
-```bash
-wget https://raw.githubusercontent.com/dockage/tor-privoxy/master/docker-compose.yml
-docker-compose up
+# HTTP Proxy
+curl -x http://localhost:8118 -s https://check.torproject.org/api/ip
 ```
 
-Alternately, you can manually launch the `tor-privoxy` container.
+## Browsing Anonymously
 
-```bash
-docker run --name='tor-privoxy' -d \
-  -p 9050:9050 \
-  -p 9051:9051 \
-  -p 8118:8118 \
-dockage/tor-privoxy:latest
-```
+After starting the container, you can configure your browser or other applications to use the HTTP proxy at `localhost:8118` (Privoxy) or the SOCKS5 proxy at `localhost:9050` (Tor).
 
-The exposed ports are:
-* <code>9050</code>: Tor proxy (SOCKS5)
-* <code>9051</code>: Tor control port
-* <code>8118</code>: Privoxy (HTTP Proxy)
+## Contribution
 
-You can extend <code>torrc</code> configuration by placing configuration file in <code>/etc/torrc.d</code>.
-You must use <code>.conf</code> extension to be include in torrc configuration.
+Feel free to open issues or submit pull requests for improvements or bug fixes.
 
-# Maintenance
+## License
 
-## Upgrading
-
-To upgrade to newer releases:
-
-- **Step 1**: Download the updated Docker image:
-```bash
-docker pull dockage/tor-privoxy
-```
-
-- **Step 2**: Stop the currently running image:
-```bash
-docker stop tor-privoxy
-```
-
-- **Step 3**: Remove the stopped container
-```bash
-docker rm -v tor-privoxy
-```
-
-- **Step 4**: Start the updated image
-```bash
-docker run --name tor-privoxy -d \
-[OPTIONS] \
-dockage/tor-privoxy:latest
-```
-
-## Shell Access
-
-For debugging and maintenance purposes you may want access the containers shell. If you are using Docker version `1.3.0` or higher you can access a running containers shell by starting `bash` using `docker exec`:
-
-```bash
-docker exec -it tor-privoxy sh
-```
-
-## Quick reference
-* Where to get help: [website](https://dockage.dev/), [documentation](https://dockage.dev/docs/)
-* GitHub repo: [dockage/tor-privoxy](https://github.com/dockage/tor-privoxy)
-* Where to file issues: [GitHub issues](https://github.com/dockage/tor-privoxy/issues)
-* Maintained by: The Dockage team (info at dockage.dev)
-* License(s) - [license](https://github.com/dockage/tor-privoxy/blob/main/LICENSE), check 3rd party documentation for license information
+This project is licensed under the MIT License. See the [LICENSE](LICENSE) file for more details.

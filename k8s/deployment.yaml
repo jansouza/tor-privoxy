@@ -1,0 +1,68 @@
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: tor-privoxy
+  namespace: default
+  labels:
+    app: tor-privoxy
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: tor-privoxy
+  strategy:
+    type: Recreate
+  template:
+    metadata:
+      labels:
+        app: tor-privoxy
+    spec:
+      containers:
+        - name: tor-privoxy
+          image: jansouza/tor-privoxy:latest
+          imagePullPolicy: Always
+          env:
+          - name: TOR_SOCKSPort
+            value: "0.0.0.0:9050"
+          - name: TOR_ControlPort
+            value: "9051"
+          - name: PRIVOXY_listen
+            value: "0.0.0.0:8118"
+          ports:
+          - name: sock
+            containerPort: 9050
+          - name: control
+            containerPort: 9051
+          - name: privoxy
+            containerPort: 8118     
+          livenessProbe:
+            tcpSocket:
+              port: 9050
+            initialDelaySeconds: 40
+            timeoutSeconds: 4
+
+---
+apiVersion: v1
+kind: Service
+metadata:
+  labels:
+    app: tor-privoxy
+  name: tor-privoxy
+  namespace: default
+spec:
+  selector:
+    app: tor-privoxy
+  ports:
+  - name: sock
+    port: 9050
+    protocol: TCP
+    targetPort: 9050
+  - name: control
+    port: 9051
+    protocol: TCP
+    targetPort: 9051
+  - name: privoxy
+    port: 8118
+    protocol: TCP
+    targetPort: 8118
