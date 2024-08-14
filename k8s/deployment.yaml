@@ -27,7 +27,7 @@ spec:
             value: "0.0.0.0:9050"
           - name: TOR_ControlPort
             value: "9051"
-          - name: PRIVOXY_listen
+          - name: PRIVOXY_listen-address
             value: "0.0.0.0:8118"
           ports:
           - name: sock
@@ -39,8 +39,19 @@ spec:
           livenessProbe:
             tcpSocket:
               port: 9050
-            initialDelaySeconds: 40
+            initialDelaySeconds: 5
             timeoutSeconds: 4
+          readinessProbe:
+            exec:
+              command:
+              - sh
+              - -c
+              - >-
+                curl -x socks5h://localhost:9050 -s https://check.torproject.org/api/ip | 
+                grep -q -e '^{\"IsTor\"\:true.*}$'
+            initialDelaySeconds: 10
+            periodSeconds: 300
+            timeoutSeconds: 5
 
 ---
 apiVersion: v1
