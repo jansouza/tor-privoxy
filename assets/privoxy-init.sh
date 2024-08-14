@@ -3,12 +3,12 @@ set -e
 
 CONFFILE=/etc/privoxy/config
 
-echo "Starting Privoxy configuration..."
+echo "[PRIVOXY] Starting Privoxy configuration..."
 
 while read -r env; do
     name="$(cut -c9- <<< ${env%%=*})"
-    echo "Set $name"
     val="${env##*=}"
+    echo "[PRIVOXY] Set Config: $name = $val"
     [[ "$name" =~ _ ]] && continue
     if grep -q "^$name" ${CONFFILE}; then
         sed -i "/^$name/s| .*| $val|" ${CONFFILE}
@@ -19,7 +19,7 @@ done <<< $(printenv | grep '^PRIVOXY_')
 
 sed -i -e '/^#debug/s/#//' ${CONFFILE}
 
-echo "Privoxy configuration applied. Starting Privoxy..."
+echo "[PRIVOXY] Privoxy configuration applied. Starting Privoxy..."
 
 # Start Privoxy
-exec /usr/sbin/privoxy --no-daemon ${CONFFILE}
+exec /usr/sbin/privoxy --no-daemon ${CONFFILE} 2>&1 | awk '{print "[PRIVOXY] " $0}'

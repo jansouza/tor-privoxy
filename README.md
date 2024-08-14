@@ -9,8 +9,8 @@ This repository provides a Docker setup to run Tor and Privoxy in containers, en
 You can dynamically adjust the Tor and Privoxy configuration by using environment variables. Each environment variable corresponds to a specific configuration option in the Tor or Privoxy configuration files. The format is as follows:
 
 - **Tor Configuration**: Environment variables should be prefixed with `TOR_` followed by the option name. For example:
+  - To set the `SOCKSPort` option, use `TOR_SOCKSPort=9050`.
   - To set the `ControlPort` option, use `TOR_ControlPort=9051`.
-  - To set the `SOCKSPort` option, use `TOR_SOCKSPort=0.0.0.0:9050`.
 
 - **Privoxy Configuration**: Similarly, environment variables for Privoxy should be prefixed with `PRIVOXY_`. For example:
   - To set the `listen-address` option, use `PRIVOXY_listen_address=0.0.0.0:8118`.
@@ -39,13 +39,19 @@ You can dynamically adjust the Tor and Privoxy configuration by using environmen
     -p 9050:9050 \
     -p 9051:9051 \
     -p 8118:8118 \
-    -e TOR_SOCKSPort=0.0.0.0:9050 \
+    -e TOR_SOCKSPort=9050 \
     -e TOR_ControlPort=9051 \
     -e PRIVOXY_listen-address=0.0.0.0:8118 \
      tor-privoxy
    ```
 
    This will start Tor on port `9050` and Privoxy on port `8118`.
+
+4. Check Logs
+
+   ```bash
+   docker logs tor-privoxy
+   ```
 
 ### Using Docker Compose
 
@@ -61,7 +67,7 @@ services:
       - "9051:9051"
       - "8118:8118"
     environment:
-      - TOR_SOCKSPort=0.0.0.0:9050
+      - TOR_SOCKSPort=9050
       - TOR_ControlPort=9051
       - PRIVOXY_listen-address=0.0.0.0:8118
 ```

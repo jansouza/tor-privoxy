@@ -7,6 +7,6 @@ services:
       - "9051:9051"
       - "8118:8118"
     environment:
-      - TOR_SOCKSPort=0.0.0.0:9050
+      - TOR_SOCKSPort=9050
       - TOR_ControlPort=9051
       - PRIVOXY_listen-address=0.0.0.0:8118

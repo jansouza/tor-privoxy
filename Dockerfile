@@ -33,8 +33,9 @@ RUN chmod +x /usr/local/bin/tor-init.sh \
 
 # Default values
 ENV TOR_DataDirectory=/var/lib/tor
-ENV TOR_SOCKSPort=0.0.0.0:9050
+ENV TOR_SOCKSPort=9050
 ENV TOR_ControlPort=9051
+ENV TOR_CookieAuthentication=1
 ENV TOR_LOG_LEVEL=notice
 
 ##########
@@ -53,7 +54,7 @@ RUN mv /etc/privoxy/config.new /etc/privoxy/config \
     && mv /etc/privoxy/regression-tests.action.new /etc/privoxy/regression-tests.action \
     && mv /etc/privoxy/trust.new /etc/privoxy/trust \
     && mv /etc/privoxy/match-all.action.new /etc/privoxy/match-all.action \
-    && echo "forward-socks5t / ${TOR_SOCKSPort} ." >> /etc/privoxy/config
+    && echo "forward-socks5t / 127.0.0.1:${TOR_SOCKSPort} ." >> /etc/privoxy/config
 
 RUN addgroup -S privoxy \
     && adduser privoxy -G privoxy || true
@@ -66,5 +67,6 @@ RUN chmod +x /usr/local/bin/privoxy-init.sh \
 
 # Default values
 ENV PRIVOXY_listen-address=0.0.0.0:8118
+ENV PRIVOXY_log-messages=1
 
 CMD ["supervisord", "-n", "-c", "/etc/supervisord.conf"]
