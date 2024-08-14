@@ -12,6 +12,13 @@ while read -r env; do
     val="${env##*=}"
     [[ "$name" =~ _ ]] && continue
     echo "[TOR] Set Config: $name = $val"
+
+    if [[ "$name" = "SOCKSPort" ]] then
+        val="0.0.0.0:${val}"
+    fi
+    if [[ "$name" = "ControlPort" ]] then
+        val="0.0.0.0:${val}"
+    fi
     if grep -q "^$name" /etc/tor/torrc; then
         sed -i "/^$name/s| .*| $val|" /etc/tor/torrc
     else
