@@ -8,8 +8,8 @@ echo "[PRIVOXY] Starting Privoxy configuration..."
 while read -r env; do
     name="$(cut -c9- <<< ${env%%=*})"
     val="${env##*=}"
-    echo "[PRIVOXY] Set Config: $name = $val"
     [[ "$name" =~ _ ]] && continue
+    echo "[PRIVOXY] Set Config: $name = $val"
     if grep -q "^$name" ${CONFFILE}; then
         sed -i "/^$name/s| .*| $val|" ${CONFFILE}
     else

@@ -47,10 +47,16 @@ You can dynamically adjust the Tor and Privoxy configuration by using environmen
 
    This will start Tor on port `9050` and Privoxy on port `8118`.
 
-4. Check Logs
+4. Container Logs
 
    ```bash
    docker logs tor-privoxy
+   ```
+
+5. Container console
+
+   ```bash
+   docker exec -it tor-privoxy sh
    ```
 
 ### Using Docker Compose
