@@ -16,6 +16,45 @@ You can dynamically adjust the Tor and Privoxy configuration by using environmen
   - To set the `listen-address` option, use `PRIVOXY_listen_address=0.0.0.0:8118`.
   - To set the `toggle` option, use `PRIVOXY_toggle=1`.
 
+
+### Configuring the `PRIVOXY_LOG_LEVEL` Variable
+
+The `PRIVOXY_LOG_LEVEL` variable is used to configure the logging levels for Privoxy. This variable accepts a list of comma-separated values, where each value corresponds to a specific log level you wish to enable.
+
+#### Format
+
+```bash
+PRIVOXY_LOG_LEVEL="512,1024,4096,8192" # default values
+```
+
+#### Log Levels Description
+
+Each number in the list represents a specific log level that, when set, will be enabled in the Privoxy configuration file. The configuration file typically contains lines defining log levels, which are commented out by default:
+
+```bash
+debug     1 # Log the destination for each request. See also debug 1024.                      
+debug     2 # show each connection status                                                             
+debug     4 # show tagging-related messages                                                     
+debug     8 # show header parsing  
+debug    16 # log all data written to the network                                         
+debug    32 # debug force feature 
+debug    64 # debug regular expression filters
+debug   128 # debug redirects
+debug   256 # debug GIF de-animation 
+debug   512 # Common Log Format
+debug  1024 # Log the destination for requests Privoxy didn't let through, and the reason why.
+debug  2048 # CGI user interface
+debug  4096 # Startup banner and warnings.
+debug  8192 # Non-fatal errors
+debug 32768 # log all data read from the network 
+debug 65536 # Log the applying actions     
+```
+
+#### Notes
+
+- Ensure that the `PRIVOXY_LOG_LEVEL` variable only contains valid log level numbers supported by Privoxy.
+
+
 ### Example Usage
 
 1. Clone this repository:

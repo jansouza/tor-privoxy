@@ -24,7 +24,7 @@ while read -r env; do
     else
         echo "$name $val" >>/etc/tor/torrc
     fi
-done <<< $(printenv | grep '^TOR_')
+done <<< $(printenv | grep '^TOR_' | grep -v 'TOR_LOG_LEVEL')
 
 echo "[TOR] Tor configuration applied. Starting Tor..."
 

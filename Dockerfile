@@ -67,6 +67,6 @@ RUN chmod +x /usr/local/bin/privoxy-init.sh \
 
 # Default values
 ENV PRIVOXY_listen-address=0.0.0.0:8118
-ENV PRIVOXY_log-messages=1
+ENV PRIVOXY_LOG_LEVEL=512,1024,4096,8192
 
 CMD ["supervisord", "-n", "-c", "/etc/supervisord.conf"]
