@@ -1,4 +1,6 @@
-FROM alpine:edge AS base
+# Pinned stable release: edge drifted (privoxy 4.x) and an old edge snapshot left Tor 0.4.8,
+# which the Tor network rejects since 2026-10 (missing protocols Desc=3 Microdesc=3).
+FROM alpine:3.22 AS base
 ARG TARGETPLATFORM
 ARG BUILDPLATFORM
 
