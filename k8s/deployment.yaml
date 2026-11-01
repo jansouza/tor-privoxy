@@ -24,7 +24,7 @@ spec:
           imagePullPolicy: Always
           env:
           - name: TOR_SOCKSPort
-            value: "0.0.0.0:9050"
+            value: "9050"
           - name: TOR_ControlPort
             value: "9051"
           - name: PRIVOXY_listen-address
